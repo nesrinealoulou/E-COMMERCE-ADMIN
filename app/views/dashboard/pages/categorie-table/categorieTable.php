@@ -35,14 +35,7 @@ $this->view("dashboard/includes/navbar",$data) ; ?>
                 <div class="card">
                   <div class="card-body">
                   <div class="search-field d-none d-md-block">
-                    <form class="d-flex align-items-center h-100" action="#">
-                      <div class="input-group">
-                        <div class="input-group-prepend bg-transparent">
-                          <i class="input-group-text border-0 mdi mdi-magnify"></i>
-                        </div>
-                        <input type="text" class="form-control bg-transparent border-0 " placeholder="Search by name">
-                      </div>
-                    </form>
+                    
                     <button type="button" class="btn btn-dark btn-sm" onclick="show_add_new(event)" >Add new categorie</button>
                     <!--add category-->
                     
@@ -119,8 +112,7 @@ $this->view("dashboard/includes/navbar",$data) ; ?>
     function show_edit_category(id,category,e) {
       EDIT_ID = id ;
        var show_edit_box = document.querySelector(".edit_category")  ;
-       show_edit_box.style.left = (e.clientX-340) + "px" ; 
-       show_edit_box.style.top= (e.clientY-80) +"px" ;
+       
        var category_input = document.querySelector("#nom_edit");
        category_input.value = category;
        if(show_edit_box.classList.contains("hide")) {
