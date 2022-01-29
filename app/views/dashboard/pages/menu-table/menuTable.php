@@ -221,8 +221,8 @@ $this->view("dashboard/includes/navbar",$data) ; ?>
                     console.log(info) ;
                     EDIT_ID = info.id;
                     
-                    show_edit_box.style.left = (e.clientX - 400) + "px";
-                    show_edit_box.style.top = (e.clientY -120 ) + "px";
+                    //show_edit_box.style.left = (e.clientX - 400) + "px";
+                    //show_edit_box.style.top = (e.clientY -120 ) + "px";
 
                     var meal_input = document.querySelector("#add_name");
                     meal_input.value = info.name;
@@ -347,21 +347,9 @@ $this->view("dashboard/includes/navbar",$data) ; ?>
 
               
 
-                /*function send_data(data = {}) {
+                
 
-
-                    var ajax = new XMLHttpRequest();
-                    ajax.addEventListener('readystatechange', function() {
-                        if (ajax.readyState == 4 && ajax.status == 200) {
-                            handle_result(ajax.responseText);
-
-                        }
-                    });
-                    ajax.open("POST", "<?=ROOT?>Ajax_meal", true);
-                    ajax.send(JSON.stringify(data));
-                }*/
-
-                function send_data(formdata) {
+                function send_data_files(formdata) {
 
                     var ajax = new XMLHttpRequest();
                     ajax.addEventListener('readystatechange', function() {
@@ -436,9 +424,3 @@ $this->view("dashboard/includes/navbar",$data) ; ?>
                 </script>
                 <?php $this->view("dashboard/includes/scripts",$data) ; 
 $this->view("dashboard/includes/footer",$data) ; ?>
-
-
-
-
-
-

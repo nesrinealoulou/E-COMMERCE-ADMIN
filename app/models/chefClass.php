@@ -16,17 +16,32 @@ Class ChefClass {
        $_SESSION['error'] .= 'please enter a valid chef occupation<br>' ; 
     } 
     
-      if (!isset($_SESSION['error']) || $_SESSION['error'] == "")  {
-            $query = "insert into chefs (name,occupation,facebook,instagram,linkedin) values (:name,:occupation,:facebook,:instagram,:linkedin)";
-            $check= $DB->write($query,$arr) ; 
-            if($check) {
-               return true ;  
-            }
-            
-        }
-        return false; 
+     //check for files 
+     $arr['image'] ="" ;
+     $size = 10 ; 
+     //mbyte
+     $size=($size * 1024 * 1024) ; 
+     $folder= "uploads/" ;
+     if (!file_exists($folder)){
+        mkdir($folder,0777,true) ;
      }
-     public function edit($data) {
+     $destination = $folder .$FILES["image"]['name'];
+
+     move_uploaded_file($FILES["image"]['tmp_name'],$destination) ;
+     $arr["image"]=$FILES["image"]['name'];
+     
+      
+    if (!isset($_SESSION['error']) || $_SESSION['error'] == "")  {
+        $query = "insert into chefs (name,occupation,facebook,instagram,linkedin,image) values (:name,:occupation,:facebook,:instagram,:linkedin,:image)";
+        $check= $DB->write($query,$arr) ; 
+        if($check) {
+           return true ;  
+        }
+        
+    }
+    return false; 
+ }
+     public function edit($data,$FILES) {
       $arr['id'] = $data->id ; 
       $arr['name'] = $data->name ; 
       $arr['occupation'] = $data->occupation ; 
@@ -40,11 +55,32 @@ Class ChefClass {
       if(!preg_match("/^[a-zA-Z ]+$/", trim($arr['occupation']))) {
          $_SESSION['error'] .= 'please enter a valid chef occupation<br>' ; 
       } 
-      if (!isset($_SESSION['error']) || $_SESSION['error'] == "")  {
-            $DB = Database::newInstance() ;
-            $query ="update chefs set name = :name,occupation = :occupation, facebook =:facebook,instagram= :instagram,linkedin= :linkedin where id = :id limit 1" ;
-            $DB->write($query,$arr);  
+      //check for files 
+      $arr['image'] ="" ;
+      $size = 10 ; 
+      //mbyte
+      $size=($size * 1024 * 1024) ; 
+      $folder= "uploads/" ;
+      if (!file_exists($folder)){
+         mkdir($folder,0777,true) ;
       }
+      if($FILES["image"]) {
+          $destination = $folder .$FILES["image"]['name'];
+          move_uploaded_file($FILES["image"]['tmp_name'],$destination) ;
+          $arr["image"]=$FILES["image"]['name'];
+          $DB = Database::newInstance() ;
+          $query ="update chefs set name = :name,occupation = :occupation, facebook =:facebook,instagram= :instagram,linkedin= :linkedin,image=:image where id = :id limit 1" ;
+             $DB->write($query,$arr);  
+      }
+      else {
+       if (!isset($_SESSION['error']) || $_SESSION['error'] == "")  {
+          $DB = Database::newInstance() ;
+          $query ="update chefs set name = :name,occupation = :occupation, facebook =:facebook,instagram= :instagram,linkedin= :linkedin where id = :id limit 1" ;
+          $DB->write($query,$arr);  
+    }
+
+      }
+
 
         
 
@@ -78,6 +114,7 @@ Class ChefClass {
             $info['facebook']= $cat_row->facebook ;
             $info['instagram']= $cat_row->instagram ;     
             $info['linkedin']= $cat_row->linkedin ;
+            $info['image']= $cat_row->image ;
             $info = str_replace('"',"'",json_encode($info)); 
            // $once_cat = $model->get_one($cat_row->instagram);
                  $result .= "<tr>" ; 
@@ -88,6 +125,7 @@ Class ChefClass {
                  <td> '.$cat_row->facebook.'</td>
                  <td> '.$cat_row->instagram.'</td>
                  <td> '.$cat_row->linkedin.'</td>
+                 <td><img src="'.ROOT.'uploads/'. $cat_row->image.'" style="width:70px;height=100%;"/></td>
                  <td><button info="'.$info.'" onclick="show_edit_chef('.$edit_args.',event)" type="button" class="btn btn-dark btn-sm">edit</button>
                  <button  onclick="delete_row(event,'.$cat_row->id.')" type="button" class="btn btn-danger btn-sm">delete</button></td>
                  

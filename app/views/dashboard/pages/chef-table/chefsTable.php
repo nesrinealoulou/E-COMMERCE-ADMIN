@@ -3,11 +3,19 @@ $this->view("dashboard/includes/navbar",$data) ; ?>
 <style type="text/css">
 .add_new {
     width: 300px;
-    height: 650px;
+    height: 800px;
     background-color: #cecccc;
     position: absolute;
     padding: 6px;
     box-shadow: 0px 0px 10px;
+}
+.edit_product-images img{
+  width: 100px;
+  height : 100px;
+  position : relative ;
+  top: -20px;
+  left : 28%;
+  
 }
 
 .edit_chef {
@@ -37,15 +45,7 @@ $this->view("dashboard/includes/navbar",$data) ; ?>
                 <div class="card">
                     <div class="card-body">
                         <div class="search-field d-none d-md-block">
-                            <form class="d-flex align-items-center h-100" action="#">
-                                <div class="input-group">
-                                    <div class="input-group-prepend bg-transparent">
-                                        <i class="input-group-text border-0 mdi mdi-magnify"></i>
-                                    </div>
-                                    <input type="text" class="form-control bg-transparent border-0 "
-                                        placeholder="Search by name">
-                                </div>
-                            </form>
+                            
                             <button type="button" class="btn btn-dark btn-sm" onclick="show_add_new(event)">Add new chef</button>
                             <!--add chef-->
                             <div class="add_new hide">
@@ -78,6 +78,15 @@ $this->view("dashboard/includes/navbar",$data) ; ?>
                                         <label>Chef linkedin</label>
                                         <input type="text" class="form-control" name="linkedin" id="linkedin" 
                                             placeholder="chef linkedin" required>
+                                    </div>
+                                    <br><br style="clear:both;">
+                                    <div class="form-group" style="width:300px">
+                                        <label>Chef image </label>
+                                        <input type="file" class="form-control" name="image" id="image"
+                                            placeholder="Meal image" optional>
+                                    </div>
+                                    <div class="js-product-images edit_product-images">
+
                                     </div>
                                         
                                     <div class="col">
@@ -124,6 +133,15 @@ $this->view("dashboard/includes/navbar",$data) ; ?>
                                         <input type="text" class="form-control" name="linkedin" id="add_linkedin" 
                                             placeholder="chef linkedin" required>
                                     </div>
+                                    <br><br style="clear:both;">
+                                    <div class="form-group" style="width:300px">
+                                        <label>Chef image </label>
+                                        <input type="file" class="form-control" name="image" id="add_image"
+                                            placeholder="Meal image" optional>
+                                    </div>
+                                    <div class="js-product-images edit_product-images">
+
+                                    </div>
                                   
                                     <div class="col">
                                     <button type="button" class="btn btn-primary" onclick="collect_edit_data(event)">Save</button>
@@ -143,6 +161,7 @@ $this->view("dashboard/includes/navbar",$data) ; ?>
                                         <th> instagram </th>
                                         <th> linkedin</th>
                                         <th> state </th>
+                                        <th>image</th>
 
                                     </tr>
                                 </thead>
@@ -182,7 +201,7 @@ $this->view("dashboard/includes/navbar",$data) ; ?>
                   
                   var show_edit_box = document.querySelector(".edit_chef");
                   if(e) {
-                    console.log(e)
+                   
                     var a = (e.currentTarget.getAttribute("info"));
                     
                     if(a) {
@@ -193,12 +212,13 @@ $this->view("dashboard/includes/navbar",$data) ; ?>
                     EDIT_ID = info.id;
                     
                     
-                    show_edit_box.style.left = (e.clientX - 400) + "px";
-                    show_edit_box.style.top = (e.clientY -120 ) + "px";
+                    
 
                     var chef_input = document.querySelector("#add_name");
                     
                     chef_input.value = info.name;
+                    var image_input = document.querySelector(".js-product-images");
+                    image_input.innerHTML = `<img src="<?=ROOT?>/uploads/${info.image} " />`
                     
                     
                     
@@ -255,6 +275,13 @@ $this->view("dashboard/includes/navbar",$data) ; ?>
                         alert("please enter a valid occupation name");
                         return;
                     }
+                    var image_input = document.querySelector("#image");
+
+                    if (image_input.files.length == 0) {
+
+                        alert("please enter a valid image");
+                        return;
+                    }
                     
                     var facebook_input = document.querySelector("#facebook");
                     var instagram_input = document.querySelector("#instagram");
@@ -267,8 +294,10 @@ $this->view("dashboard/includes/navbar",$data) ; ?>
                     data.append('facebook', facebook_input.value.trim());
                     data.append('instagram', instagram_input.value.trim());
                     data.append('linkedin', linkedin_input.value.trim());
+                    data.append('image', image_input.files[0]);
                     data.append('data_type', 'add_chef');
-                    send_data(data);
+                    send_data_files(data);
+                    
             
 
 
@@ -288,6 +317,15 @@ $this->view("dashboard/includes/navbar",$data) ; ?>
                         alert("please enter a valid meal name");
                         return;
                     }
+                    var image_input = document.querySelector("#add_image");
+                        
+                        if (image_input.files.length >  0) {
+
+                            
+                            data.append('image',image_input.files[0]) ;
+                            
+                            
+                        }
                     var facebook_input = document.querySelector("#add_facebook");
                     var instagram_input = document.querySelector("#add_instagram");
                     var linkedin_input = document.querySelector("#add_linkedin");
@@ -295,13 +333,14 @@ $this->view("dashboard/includes/navbar",$data) ; ?>
 
                     
                     data.append('name', chef_input.value.trim());
-                     data.append('occupation', occupation_input.value.trim());
+                    data.append('occupation', occupation_input.value.trim());
                     data.append('facebook', facebook_input.value.trim());
                     data.append('instagram', instagram_input.value.trim());
                     data.append('linkedin', instagram_input.value.trim());
                     data.append('data_type', 'edit_chef');
                     data.append('id',EDIT_ID);
-                    send_data(data);
+                    send_data_files(data);
+                    
 
 
                 }
@@ -322,11 +361,24 @@ $this->view("dashboard/includes/navbar",$data) ; ?>
                     ajax.send(formdata);
                 }
 
+                function send_data_files(formdata) {
+
+                    var ajax = new XMLHttpRequest();
+                    ajax.addEventListener('readystatechange', function() {
+                        if (ajax.readyState == 4 && ajax.status == 200) {
+                            handle_result(ajax.responseText);
+
+                        }
+                    });
+                    ajax.open("POST", "<?=ROOT?>Ajax_chef", true);
+                    ajax.send(formdata);
+                    }
+
                 
 
 
                 function handle_result(result) {
-                  
+                  console.log(result)
                     if (result != "") {
                         var obj = JSON.parse(result);
                       
